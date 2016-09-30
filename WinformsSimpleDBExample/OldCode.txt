@@ -1,0 +1,115 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WinformsSimpleDBExample
+{
+    public partial class frmPerson : Form
+    {
+        private DataSet dsData = new DataSet("Container");
+        private DataTable dtPersons = new DataTable();
+        
+        public frmPerson()
+        {
+            InitializeComponent();
+        }
+
+        private void btnAddNew_Click(object sender, EventArgs e)
+        {
+            // add new person
+            this.txtLastName.Text = string.Empty;
+            this.txtFirstName.Text = string.Empty;
+            this.txtEmail.Text = string.Empty;
+            this.txtPhone.Text = string.Empty;
+            this.chkMember.Checked = false;
+
+            this.tabControl1.SelectedIndex = 1;
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            // save person
+            dtPersons.Rows.Add(null,
+                this.txtLastName.Text,
+                this.txtFirstName.Text,
+                this.txtEmail.Text,
+                this.txtPhone.Text,
+                this.chkMember.Checked
+                );
+
+            this.dgvPersons.DataSource = dtPersons;
+            this.dgvPersons.Columns["Id"].Visible = false;
+
+            this.tabControl1.SelectedIndex = 0;
+        }
+
+        private void frmPerson_Load(object sender, EventArgs e)
+        {
+            CreatePersonsTable();
+
+            //dsData.Tables.Add(dtPersons);
+
+            //var simpleDB = new SimpleDB(dsData);
+            var simpleDB = new SimpleDB();
+
+            simpleDB.LoadTable(ref dtPersons);
+
+            // load existing data
+            //simpleDB.Load();
+
+            //dtPersons = dsData.Tables["Persons"];
+
+            //var newTable = new DataTable("Persons");
+
+
+            this.dgvPersons.DataSource = dtPersons;
+            this.dgvPersons.Columns["Id"].Visible = false;
+        }
+
+        private void frmPerson_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // save all data
+            //var simpleDB = new SimpleDB(dsData);
+            //simpleDB.Save();
+
+            var simpleDB = new SimpleDB(dsData);
+            simpleDB.SaveTable(dtPersons);
+        }
+
+        private void CreatePersonsTable() 
+        {
+            // Create a datatable with an identity autoincrement column:
+            dtPersons = CreateIdentityColumnTable("Persons");
+
+            // add additional columns:
+            dtPersons.Columns.Add("LastName", typeof(string));
+            dtPersons.Columns.Add("FirstName", typeof(string));
+            dtPersons.Columns.Add("Email", typeof(string));
+            dtPersons.Columns.Add("Phone", typeof(string));
+            dtPersons.Columns.Add("Member", typeof(Boolean));
+        }
+
+        private DataTable CreateIdentityColumnTable(string tableName)
+        {
+            var workTable = new DataTable(tableName);
+
+            DataColumn workColumn = workTable.Columns.Add("Id", typeof(Int32));
+            workColumn.AutoIncrement = true;
+            workColumn.AutoIncrementSeed = 1;
+            workColumn.AutoIncrementStep = 1;
+            workColumn.ReadOnly = true;
+
+            // Set the primary key to the identity column
+            workTable.PrimaryKey = new DataColumn[] { workColumn };
+            
+            return workTable;
+        }
+
+    }
+}

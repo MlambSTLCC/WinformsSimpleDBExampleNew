@@ -1,0 +1,40 @@
+﻿Description of tag-based attributes for form and controls:
+
+*** Create TagAttributes class to manage this ***
+
+??? Make TagAttributes a FormPlus property ???
+
+Form tag attributes (pass as Dictionary<string, object>):
+
+datamap (map control containers to table names)
+automap=off|on
+object=<object>
+useformname=off|on
+autocontrols=off|on
+
+Control tag atributes (pass as Dictionary<string, string>):
+
+datatype=???		tells the table creator what datatype to make matching column.
+lowvalue=???		checks lower bound
+highvalue=???		checks upper bound
+toupper				
+tolower
+toproper
+default=value		sets a default value
+pattern=???			sets a regex pattern
+column=???			overrides default column to control mapping (exceptions).
+filter=???			filters out selected characters
+
+Container tag attributes:
+
+table=???			or just "table".
+
+
+Table Load sequence of actions:
+
+load dictFormTag
+
+load dictControlTags
+create dictControlMap<string, Control>
+
+
